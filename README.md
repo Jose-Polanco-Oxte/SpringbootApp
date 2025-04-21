@@ -1,3 +1,3 @@
-# Springboot Applitaction (Event Manager)
+# Springboot Application (Event Manager)
 “Event Manager is developed with the purpose of allowing different users from all over the world to create, edit, organize, invite users and validate events, as well as to keep track of interests and share cultural tastes through the feature of groups (niches) to recommend events.
 In this repository you will be able to follow my development process and how I implement each functionality. My goal is to learn about the complete development of a software, I also want to put into practice agile methodologies, clean architectures and learn about software design.
