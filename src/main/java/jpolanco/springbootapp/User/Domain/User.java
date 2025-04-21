@@ -1,9 +1,14 @@
 package jpolanco.springbootapp.User.Domain;
 
-import jpolanco.springbootapp.Shared.Domain.Validator;
+import jpolanco.springbootapp.Shared.Domain.exceptions.ExceptionDetails;
 import jpolanco.springbootapp.Shared.Domain.valueobjects.Email;
 import jpolanco.springbootapp.Shared.Domain.valueobjects.Name;
 import jpolanco.springbootapp.Shared.Domain.valueobjects.QR;
+import jpolanco.springbootapp.User.Domain.exceptions.UserNotValid;
+
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 public class User {
     private Long id;
@@ -11,33 +16,26 @@ public class User {
     private Name name;
     private String password;
     private QR qr;
-    private Validator<String> validator = new Validator<>();
+    private Instant createdAt = Instant.now();
+    private Set<Role> roles = new HashSet<>();
+    private String status = "ACTIVE";
 
-    public User(Long id, Email email, Name name, String password, QR qr) {
+    public User(Long id, Email email, Name name, String password, Instant createdAt, QR qr, Set<Role> roles,  String status) {
         if (id == null || id <= 0) {
-            throw new IllegalArgumentException("ID must be a positive number");
+            throw new UserNotValid("invalid id",
+                    new ExceptionDetails("ID cannot be null or negative", "low"));
         }
-        if (qr == null || qr.getPath().isBlank()) {
-            throw new IllegalArgumentException("QR path cannot be null or empty");
-        }
-
-        validator.setStrategy(new EmailValidator());
-        validator.validate(email.getEmail());
-        validator.setStrategy(new NameValidator());
-        validator.validate(name.getFirstName());
-        validator.validate(name.getLastName());
-        validator.setStrategy(new PasswordValidator());
-        validator.validate(password);
-
         this.id = id;
         this.email = email;
         this.name = name;
         this.password = password;
+        this.createdAt = createdAt;
         this.qr = qr;
+        this.roles = roles;
+        this.status = status;
     }
 
     public User () {
-
     }
 
     public Long getId() {
@@ -72,19 +70,35 @@ public class User {
         this.password = password;
     }
 
-    public Validator<String> getValidator() {
-        return validator;
-    }
-
-    public void setValidator(Validator<String> validator) {
-        this.validator = validator;
-    }
-
     public QR getQr() {
         return qr;
     }
 
     public void setQr(QR qr) {
         this.qr = qr;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 }

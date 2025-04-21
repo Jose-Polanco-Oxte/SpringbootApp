@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -17,17 +21,33 @@ public class UserEntity {
     private String email;
 
     @Column(nullable = false)
-    private String username;
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(name = "qr_path", columnDefinition = "TEXT", nullable = false)
+    @Column(nullable = false)
     private String qrPath;
 
-    public UserEntity(Long id, String username, String email, String password, String qrPath) {
+    @Column(nullable = false)
+    private Instant createdAt = Instant.now();
+
+    @Column(nullable = false)
+    private String status = "ACTIVE";
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<RolesEntity> roles = new HashSet<>();
+
+    public UserEntity(Long id, String firstName, String lastName, String email, String password, String qrPath) {
         this.id = id;
-        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.qrPath = qrPath;
