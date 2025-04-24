@@ -1,0 +1,52 @@
+package jpolanco.springbootapp.user.infrastructure.services;
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import jpolanco.springbootapp.user.application.services.QRService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+
+@Component
+public class Zxing implements QRService {
+
+    @Value("${QRPATH}")
+    private String contextPath;
+
+    @Override
+    public void generate(String fileName, String content) {
+        fileName = fileName + ".png";
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        int width = 1000; // ancho del QR
+        int height = 1000; // alto del QR
+        try {
+            BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, width, height);
+            Path path = FileSystems.getDefault().getPath(contextPath + fileName);
+            MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
+            String svg = QRToSVG.generateSVG(content, width, height);
+            String svgFileName = fileName.replace(".png", ".svg");
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(contextPath + svgFileName))) {
+                writer.write(svg);
+            } catch (IOException e) {
+                throw new RuntimeException("Error al guardar el archivo SVG", e);
+            }
+        } catch (WriterException | IOException e) {
+            throw new RuntimeException("Error al generar el código QR", e);
+        }
+    }
+
+    @Override
+    public boolean exist(String fileName) {
+        File file = new File(fileName);
+        return file.exists();
+    }
+}
