@@ -1,13 +1,13 @@
 package jpolanco.springbootapp.user.infrastructure.adapters.output.mysql;
 
-import jpolanco.springbootapp.user.domain.repository.RolesRepository;
+import jpolanco.springbootapp.user.application.ports.output.RolesRepositoryPort;
 import jpolanco.springbootapp.user.infrastructure.exceptions.DataFailure;
 import jpolanco.springbootapp.user.infrastructure.adapters.output.persistence.RoleEntity;
 import jpolanco.springbootapp.user.infrastructure.adapters.output.repository.JpaRoleRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class RoleRepositoryMySQL implements RolesRepository {
+public class RoleRepositoryMySQL implements RolesRepositoryPort {
 
     private final JpaRoleRepository jpaRoleRepository;
 

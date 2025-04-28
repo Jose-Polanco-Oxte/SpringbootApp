@@ -1,4 +1,4 @@
-package jpolanco.springbootapp.user.application.services;
+package jpolanco.springbootapp.user.application.ports.input;
 
 public interface TokenService {
     String generate();

@@ -3,7 +3,7 @@ package jpolanco.springbootapp.user.domain.model.valueobjects;
 import jpolanco.springbootapp.shared.application.Error;
 import jpolanco.springbootapp.shared.application.Result;
 import jpolanco.springbootapp.shared.application.ResultBuilder;
-import jpolanco.springbootapp.user.domain.exceptions.NameError;
+import jpolanco.springbootapp.user.domain.errors.NameError;
 
 public class FullName {
     private String firstName;
@@ -24,16 +24,16 @@ public class FullName {
 
     private static Result<String> ensureValueIsValid(String value) {
         if (value == null || value.isEmpty()) {
-            return Result.failure(Error.NullValue);
+            return Result.failure(Error.NULLVALUE);
         }
         if (value.length() < 2) {
-            return Result.failure(NameError.TooShort);
+            return Result.failure(NameError.TOOSHORT);
         }
         if (value.matches(".*\\d.*")) {
-            return Result.failure(NameError.InvalidCharacters);
+            return Result.failure(NameError.INVALIDCHARACTERS);
         }
         if (value.length() > 50) {
-            return Result.failure(NameError.TooLong);
+            return Result.failure(NameError.TOOLONG);
         }
         return Result.success(value);
     }

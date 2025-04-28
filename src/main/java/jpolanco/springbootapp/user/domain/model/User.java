@@ -16,7 +16,7 @@ public class User {
     private EncodedPassword encodedPassword;
     private Roles roles;
     private Status status;
-    private final QRFileName qrFileName;
+    private QRFileName qrFileName;
     private final Instant createdAt;
 
     private User(
@@ -52,7 +52,7 @@ public class User {
                 .encodedPassword(encodedPassword)
                 .roles(Set.of(Role.create("USER").getValue()))
                 .status("ACTIVE")
-                .qrFileName(email)
+                .qrFileName(UUID.randomUUID().toString())
                 .createdAt(Instant.now())
                 .build();
     }
@@ -283,6 +283,10 @@ public class User {
         return result;
     }
 
+    public boolean isActive() {
+        return this.status.getValue().equals("ACTIVE");
+    }
+
     public String getStatus() {
         return status.getValue();
     }
@@ -296,7 +300,12 @@ public class User {
         return qrFileName.getValue();
     }
 
-    public boolean verifyQRFileName(String otherQRFileName) {
-        return qrFileName.getValue().equals(otherQRFileName);
+    public Result<QRFileName> newQRFileName() {
+        Result<QRFileName> result = QRFileName.create(UUID.randomUUID().toString());
+        if (result.isFailure()) {
+            return Result.failure(result.getError());
+        }
+        this.qrFileName = result.getValue();
+        return result;
     }
 }

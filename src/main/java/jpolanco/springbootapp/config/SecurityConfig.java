@@ -1,13 +1,20 @@
 package jpolanco.springbootapp.config;
 
+import jpolanco.springbootapp.user.infrastructure.adapters.output.persistence.Token;
+import jpolanco.springbootapp.user.infrastructure.adapters.output.repository.JpaTokenRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -17,15 +24,35 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtAuthFilter jwtAuthFilter;
+    private final AuthenticationProvider authenticationProvider;
+    private final JpaTokenRepository jpaTokenRepository;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()) // Permitir todas las solicitudes
+                        .requestMatchers("/auth/**")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> logout.logoutUrl("/auth/logout")
+                        .addLogoutHandler((request, response, authentication) -> {
+                            final var authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+                            logout(authHeader);
+                        })
+                        .logoutSuccessHandler((request, response, authentication) ->
+                            SecurityContextHolder.clearContext())
+                );
         return http.build();
     }
 
@@ -40,5 +67,18 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private void logout(final String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid accessToken");
+        }
+
+        final String jwtToken = token.substring(7);
+        final Token foundToken = jpaTokenRepository.findByToken(jwtToken)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid accessToken"));
+        foundToken.setExpired(true);
+        foundToken.setRevoked(true);
+        jpaTokenRepository.save(foundToken);
     }
 }

@@ -1,6 +1,4 @@
-package jpolanco.springbootapp.user.application.services;
-
-import jpolanco.springbootapp.user.domain.model.Roles;
+package jpolanco.springbootapp.user.application.ports.input;
 
 import java.util.Set;
 

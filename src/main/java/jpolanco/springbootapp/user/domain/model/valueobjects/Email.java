@@ -13,7 +13,7 @@ public class Email {
 
     public static Result<Email> create(String value) {
         if (value == null || value.isBlank()) {
-            return Result.failure(Error.NullValue);
+            return Result.failure(Error.NULLVALUE);
         }
         if (!value.matches(EMAIL_REGEX)) {
             return Result.failure(new Error("InvalidEmail", "Invalid email format"));

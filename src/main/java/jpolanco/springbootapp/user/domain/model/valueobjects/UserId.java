@@ -14,9 +14,10 @@ public class UserId {
 
     public static Result<UserId> create(String value) {
         if (value == null || value.isEmpty()) {
-            return Result.failure(Error.NullValue);
+            return Result.failure(Error.NULLVALUE);
         }
         try {
+            System.out.println("Validating UUID: " + value);
             UUID.fromString(value);
         } catch (IllegalArgumentException e) {
             return Result.failure(new Error("InvalidUUID", "The provided UUID is invalid."));

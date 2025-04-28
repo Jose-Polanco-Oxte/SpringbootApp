@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,7 +32,7 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -47,4 +48,19 @@ public class UserEntity {
 
     @Column(nullable = false)
     private String qrFileName;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Token> tokens;
+
+    public UserEntity(UUID id, String firstName, String lastName, String email, String password, Set<RoleEntity> roles, String status, Instant createdAt, String qrFileName) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.qrFileName = qrFileName;
+    }
 }

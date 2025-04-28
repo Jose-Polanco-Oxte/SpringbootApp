@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class Mapper {
     public static User toDomain(UserEntity userEntity) {
-
+        System.out.println("Entity UUID: " + userEntity.getId());
         Result<User> result = User.load(
                 userEntity.getId().toString(),
                 userEntity.getFirstName(),
@@ -37,7 +37,7 @@ public class Mapper {
 
     public static UserEntity toEntity(User user) {
         return new UserEntity(
-                UUID.nameUUIDFromBytes(user.getId().getBytes(StandardCharsets.UTF_8)),
+                UUID.fromString(user.getId()),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),

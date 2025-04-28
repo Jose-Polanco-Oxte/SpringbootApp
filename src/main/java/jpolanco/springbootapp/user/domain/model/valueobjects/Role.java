@@ -3,7 +3,7 @@ package jpolanco.springbootapp.user.domain.model.valueobjects;
 import jpolanco.springbootapp.shared.application.Error;
 import jpolanco.springbootapp.shared.application.Result;
 import jpolanco.springbootapp.shared.application.ResultBuilder;
-import jpolanco.springbootapp.user.domain.exceptions.RoleError;
+import jpolanco.springbootapp.user.domain.errors.RoleError;
 
 public class Role {
     private String value;
@@ -20,19 +20,16 @@ public class Role {
 
     private static Result<Role> ensureIsValidRole(String value) {
         if (value == null || value.isBlank()) {
-            return Result.failure(Error.NullValue);
+            return Result.failure(Error.NULLVALUE);
         }
         if (value.contains(".")) {
-            return Result.failure(RoleError.ContainDots);
+            return Result.failure(RoleError.CONTAINDOTS);
         }
         if (value.length() > 20) {
-            return Result.failure(RoleError.TooLong);
+            return Result.failure(RoleError.TOOLONG);
         }
         if (value.length() < 3) {
-            return Result.failure(RoleError.TooShort);
-        }
-        if (value.matches("[a-zA-Z0-9_]+")) {
-            return Result.failure(RoleError.InvalidFormat);
+            return Result.failure(RoleError.TOOSHORT);
         }
         return Result.success(new Role(value));
     }

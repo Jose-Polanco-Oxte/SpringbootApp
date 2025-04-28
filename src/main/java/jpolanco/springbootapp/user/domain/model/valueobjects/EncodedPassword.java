@@ -12,7 +12,7 @@ public class EncodedPassword {
 
     public static Result<EncodedPassword> create(String value) {
         if (value == null || value.isBlank()) {
-            Result.failure(Error.NullValue);
+            Result.failure(Error.NULLVALUE);
         }
         return Result.success(new EncodedPassword(value));
     }

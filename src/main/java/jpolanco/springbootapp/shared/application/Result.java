@@ -12,14 +12,14 @@ public class Result<T> {
 
     protected Result(boolean isSuccess, Error error) {
         if (isSuccess) {
-            if (error != Error.None) {
+            if (error != Error.NONE) {
                 throw new IllegalArgumentException();
             } else {
                 this.IsSuccess = true;
                 this.error = error;
             }
         } else {
-            if (error == Error.None) {
+            if (error == Error.NONE) {
                 throw new IllegalArgumentException();
             } else {
                 this.IsSuccess = false;
@@ -40,9 +40,17 @@ public class Result<T> {
 
     public Error getError() {
         if (IsSuccess) {
-            return Error.None;
+            return Error.NONE;
         } else {
             return error;
+        }
+    }
+
+    public String getMessage() {
+        if (IsSuccess) {
+            return "Success";
+        } else {
+            return error.message;
         }
     }
 
@@ -62,7 +70,11 @@ public class Result<T> {
     }
 
     public static <T> Result<T> success (T value) {
-        return new Result<>(value, true, Error.None);
+        return new Result<>(value, true, Error.NONE);
+    }
+
+    public static <T> Result<T> success () {
+        return new Result<>(null, true, Error.NONE);
     }
 
     public static <T> Result<T> failure (Error error) {
@@ -72,7 +84,7 @@ public class Result<T> {
 
     public static <T> Result<T> create (T value) {
         if (value == null) {
-            return failure(Error.NullValue);
+            return failure(Error.NULLVALUE);
         } else {
             return success(value);
         }

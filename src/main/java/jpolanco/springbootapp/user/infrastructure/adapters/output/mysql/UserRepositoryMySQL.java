@@ -7,17 +7,17 @@ import jpolanco.springbootapp.user.infrastructure.adapters.output.repository.Jpa
 import jpolanco.springbootapp.user.infrastructure.adapters.output.Mapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class UserRepositoryMySQL implements UserRepositoryPort {
 
     private final JpaUserRepository jpaUserRepository;
-    private final JpaRoleRepository jpaRoleRepository;
 
-    public UserRepositoryMySQL(JpaUserRepository jpaUserRepository, JpaRoleRepository jpaRoleRepository) {
+    public UserRepositoryMySQL(JpaUserRepository jpaUserRepository) {
         this.jpaUserRepository = jpaUserRepository;
-        this.jpaRoleRepository = jpaRoleRepository;
     }
 
     @Override
@@ -27,7 +27,8 @@ public class UserRepositoryMySQL implements UserRepositoryPort {
 
     @Override
     public Optional<User> findById(String userId) {
-        return Optional.empty();
+        return jpaUserRepository.findById(UUID.fromString(userId))
+                .map(Mapper::toDomain);
     }
 
     @Override
@@ -38,6 +39,14 @@ public class UserRepositoryMySQL implements UserRepositoryPort {
 
     @Override
     public void deleteById(String userId) {
+        jpaUserRepository.deleteById(UUID.fromString(userId));
+    }
 
+    @Override
+    public List<User> findAll() {
+        return jpaUserRepository.findAll()
+                .stream()
+                .map(Mapper::toDomain)
+                .toList();
     }
 }

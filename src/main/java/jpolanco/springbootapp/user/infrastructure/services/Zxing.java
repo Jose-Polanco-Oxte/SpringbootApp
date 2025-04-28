@@ -5,7 +5,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import jpolanco.springbootapp.user.application.services.QRService;
+import jpolanco.springbootapp.user.application.ports.input.QRService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Component
@@ -23,7 +24,7 @@ public class Zxing implements QRService {
     private String contextPath;
 
     @Override
-    public void generate(String fileName, String content) {
+    public void generate(String fileName, String content) throws RuntimeException {
         fileName = fileName + ".png";
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         int width = 1000; // ancho del QR
@@ -48,5 +49,16 @@ public class Zxing implements QRService {
     public boolean exist(String fileName) {
         File file = new File(fileName);
         return file.exists();
+    }
+
+    @Override
+    public void delete(String fileName) throws RuntimeException {
+        System.out.println("Deleting QR code: " + fileName);
+        try {
+            Files.deleteIfExists(FileSystems.getDefault().getPath(contextPath + fileName + ".png"));
+            Files.deleteIfExists(FileSystems.getDefault().getPath(contextPath + fileName + ".svg"));
+        } catch (IOException e) {
+            throw new RuntimeException("Error al eliminar el archivo QR", e);
+        }
     }
 }

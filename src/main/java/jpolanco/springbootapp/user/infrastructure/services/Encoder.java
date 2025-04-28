@@ -1,29 +1,24 @@
 package jpolanco.springbootapp.user.infrastructure.services;
 
 import jpolanco.springbootapp.user.application.ports.input.EncoderService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class Encoder implements EncoderService {
 
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    Encoder(BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
-
-    public Encoder() {
-        this.bCryptPasswordEncoder = new BCryptPasswordEncoder();
-    }
+    private final PasswordEncoder encoder;
 
     @Override
     public String encode(String data) {
-        return bCryptPasswordEncoder.encode(data);
+        return encoder.encode(data);
     }
 
     @Override
     public boolean matches(String rawData, String encodedData) {
-        return bCryptPasswordEncoder.matches(rawData, encodedData);
+        return encoder.matches(rawData, encodedData);
     }
 }

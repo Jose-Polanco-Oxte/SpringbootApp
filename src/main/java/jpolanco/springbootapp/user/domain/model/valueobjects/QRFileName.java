@@ -3,20 +3,18 @@ package jpolanco.springbootapp.user.domain.model.valueobjects;
 import jpolanco.springbootapp.shared.application.Error;
 import jpolanco.springbootapp.shared.application.Result;
 
-import java.util.UUID;
-
 public class QRFileName {
     private String fileName;
 
-    private QRFileName(String email) {
-        this.fileName = UUID.randomUUID().toString();
+    private QRFileName(String value) {
+        this.fileName = value;
     }
 
-    public static Result<QRFileName> create(String email) {
-        if (email == null || email.isEmpty()) {
-            return Result.failure(Error.NullValue);
+    public static Result<QRFileName> create(String value) {
+        if (value == null || value.isEmpty()) {
+            return Result.failure(Error.NULLVALUE);
         }
-        return Result.success(new QRFileName(email));
+        return Result.success(new QRFileName(value));
     }
 
     public String getValue() {
