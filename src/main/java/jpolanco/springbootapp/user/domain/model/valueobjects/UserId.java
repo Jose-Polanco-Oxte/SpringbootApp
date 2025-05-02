@@ -1,7 +1,7 @@
 package jpolanco.springbootapp.user.domain.model.valueobjects;
 
-import jpolanco.springbootapp.shared.application.Error;
-import jpolanco.springbootapp.shared.application.Result;
+import jpolanco.springbootapp.shared.domain.Error;
+import jpolanco.springbootapp.shared.domain.Result;
 
 import java.util.UUID;
 
@@ -14,10 +14,9 @@ public class UserId {
 
     public static Result<UserId> create(String value) {
         if (value == null || value.isEmpty()) {
-            return Result.failure(Error.NULLVALUE);
+            return Result.failure(Error.NULL_VALUE);
         }
         try {
-            System.out.println("Validating UUID: " + value);
             UUID.fromString(value);
         } catch (IllegalArgumentException e) {
             return Result.failure(new Error("InvalidUUID", "The provided UUID is invalid."));

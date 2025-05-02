@@ -1,39 +1,37 @@
 package jpolanco.springbootapp.user.infrastructure.adapters.output.mysql;
 
-import jpolanco.springbootapp.user.application.ports.output.UserRepositoryPort;
+import jpolanco.springbootapp.user.application.ports.output.UserRepository;
 import jpolanco.springbootapp.user.domain.model.User;
-import jpolanco.springbootapp.user.infrastructure.adapters.output.repository.JpaRoleRepository;
+import jpolanco.springbootapp.user.infrastructure.adapters.Mappers.entity.UserEntityMapper;
 import jpolanco.springbootapp.user.infrastructure.adapters.output.repository.JpaUserRepository;
-import jpolanco.springbootapp.user.infrastructure.adapters.output.Mapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @Repository
-public class UserRepositoryMySQL implements UserRepositoryPort {
+public class UserRepositoryMySQL implements UserRepository {
 
     private final JpaUserRepository jpaUserRepository;
-
-    public UserRepositoryMySQL(JpaUserRepository jpaUserRepository) {
-        this.jpaUserRepository = jpaUserRepository;
-    }
+    private final UserEntityMapper mapper;
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return jpaUserRepository.findByEmail(email).map(Mapper::toDomain);
+        return jpaUserRepository.findByEmail(email).map(mapper::toDomain);
     }
 
     @Override
     public Optional<User> findById(String userId) {
         return jpaUserRepository.findById(UUID.fromString(userId))
-                .map(Mapper::toDomain);
+                .map(mapper::toDomain);
     }
 
     @Override
     public User save(User user) {
-        jpaUserRepository.save(Mapper.toEntity(user));
+        jpaUserRepository.save(mapper.toEntity(user));
         return user;
     }
 
@@ -46,7 +44,7 @@ public class UserRepositoryMySQL implements UserRepositoryPort {
     public List<User> findAll() {
         return jpaUserRepository.findAll()
                 .stream()
-                .map(Mapper::toDomain)
+                .map(mapper::toDomain)
                 .toList();
     }
 }

@@ -1,13 +1,13 @@
 package jpolanco.springbootapp.user.infrastructure.adapters.output.mysql;
 
-import jpolanco.springbootapp.user.application.ports.output.RolesRepositoryPort;
-import jpolanco.springbootapp.user.infrastructure.exceptions.DataFailure;
+import jpolanco.springbootapp.user.application.ports.output.RolesRepository;
+import jpolanco.springbootapp.user.infrastructure.errors.DataFailure;
 import jpolanco.springbootapp.user.infrastructure.adapters.output.persistence.RoleEntity;
 import jpolanco.springbootapp.user.infrastructure.adapters.output.repository.JpaRoleRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class RoleRepositoryMySQL implements RolesRepositoryPort {
+public class RoleRepositoryMySQL implements RolesRepository {
 
     private final JpaRoleRepository jpaRoleRepository;
 
@@ -22,7 +22,6 @@ public class RoleRepositoryMySQL implements RolesRepositoryPort {
 
     @Override
     public void save(String name) {
-        System.out.println("Saving role: " + name);
         jpaRoleRepository.save(new RoleEntity(name));
     }
 

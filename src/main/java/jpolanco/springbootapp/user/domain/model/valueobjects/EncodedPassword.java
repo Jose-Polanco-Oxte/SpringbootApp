@@ -1,10 +1,10 @@
 package jpolanco.springbootapp.user.domain.model.valueobjects;
 
-import jpolanco.springbootapp.shared.application.Error;
-import jpolanco.springbootapp.shared.application.Result;
+import jpolanco.springbootapp.shared.domain.Error;
+import jpolanco.springbootapp.shared.domain.Result;
 
 public class EncodedPassword {
-    private String value;
+    private final String value;
 
     private EncodedPassword(String value) {
         this.value = value;
@@ -12,7 +12,7 @@ public class EncodedPassword {
 
     public static Result<EncodedPassword> create(String value) {
         if (value == null || value.isBlank()) {
-            Result.failure(Error.NULLVALUE);
+            Result.failure(Error.NULL_VALUE);
         }
         return Result.success(new EncodedPassword(value));
     }

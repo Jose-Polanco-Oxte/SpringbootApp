@@ -1,5 +1,7 @@
 package jpolanco.springbootapp.config;
 
+import jpolanco.springbootapp.config.auth.MyUserDetails;
+import jpolanco.springbootapp.user.domain.model.valueobjects.Role;
 import jpolanco.springbootapp.user.infrastructure.adapters.output.mysql.UserRepositoryMySQL;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -8,14 +10,15 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Configuration
+import java.util.List;
+
 @RequiredArgsConstructor
+@Configuration
 public class AppConfig {
 
     private final UserRepositoryMySQL userRepository;
@@ -29,10 +32,16 @@ public class AppConfig {
         return username -> {
             final var user = userRepository.findByEmail(username)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-            return User.builder()
-                    .username(user.getEmail())
-                    .password(user.getEncodedPassword())
-                    .build();
+            List<String> roles = user.getRoles().stream()
+                    .map(Role::getValue)
+                    .toList();
+            return new MyUserDetails(
+                    user.getId(),
+                    user.getEmail(),
+                    user.getEncodedPassword(),
+                    user.isActive(),
+                    roles
+            );
         };
     }
 

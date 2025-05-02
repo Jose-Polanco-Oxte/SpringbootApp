@@ -1,13 +1,13 @@
 package jpolanco.springbootapp.user.domain.model.valueobjects;
 
-import jpolanco.springbootapp.shared.application.Error;
-import jpolanco.springbootapp.shared.application.Result;
-import jpolanco.springbootapp.shared.application.ResultBuilder;
+import jpolanco.springbootapp.shared.domain.Error;
+import jpolanco.springbootapp.shared.domain.Result;
+import jpolanco.springbootapp.shared.domain.ResultBuilder;
 import jpolanco.springbootapp.user.domain.errors.NameError;
 
 public class FullName {
-    private String firstName;
-    private String lastName;
+    private final String firstName;
+    private final String lastName;
 
     private FullName(String firstName, String lastName) {
         this.firstName = firstName;
@@ -24,16 +24,16 @@ public class FullName {
 
     private static Result<String> ensureValueIsValid(String value) {
         if (value == null || value.isEmpty()) {
-            return Result.failure(Error.NULLVALUE);
+            return Result.failure(Error.NULL_VALUE);
         }
         if (value.length() < 2) {
-            return Result.failure(NameError.TOOSHORT);
+            return Result.failure(NameError.TOO_SHORT);
         }
         if (value.matches(".*\\d.*")) {
-            return Result.failure(NameError.INVALIDCHARACTERS);
+            return Result.failure(NameError.INVALID_CHARACTERS);
         }
         if (value.length() > 50) {
-            return Result.failure(NameError.TOOLONG);
+            return Result.failure(NameError.TOO_LONG);
         }
         return Result.success(value);
     }

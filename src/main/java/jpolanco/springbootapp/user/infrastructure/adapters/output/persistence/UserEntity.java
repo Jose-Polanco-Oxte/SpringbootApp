@@ -50,7 +50,7 @@ public class UserEntity {
     private String qrFileName;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Token> tokens;
+    private List<TokenEntity> tokenEntities;
 
     public UserEntity(UUID id, String firstName, String lastName, String email, String password, Set<RoleEntity> roles, String status, Instant createdAt, String qrFileName) {
         this.id = id;

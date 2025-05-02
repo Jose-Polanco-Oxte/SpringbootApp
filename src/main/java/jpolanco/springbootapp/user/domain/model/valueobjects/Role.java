@@ -1,12 +1,12 @@
 package jpolanco.springbootapp.user.domain.model.valueobjects;
 
-import jpolanco.springbootapp.shared.application.Error;
-import jpolanco.springbootapp.shared.application.Result;
-import jpolanco.springbootapp.shared.application.ResultBuilder;
+import jpolanco.springbootapp.shared.domain.Error;
+import jpolanco.springbootapp.shared.domain.Result;
+import jpolanco.springbootapp.shared.domain.ResultBuilder;
 import jpolanco.springbootapp.user.domain.errors.RoleError;
 
 public class Role {
-    private String value;
+    private final String value;
 
     private Role(String value) {
         this.value = value;
@@ -20,13 +20,13 @@ public class Role {
 
     private static Result<Role> ensureIsValidRole(String value) {
         if (value == null || value.isBlank()) {
-            return Result.failure(Error.NULLVALUE);
+            return Result.failure(Error.NULL_VALUE);
         }
         if (value.contains(".")) {
-            return Result.failure(RoleError.CONTAINDOTS);
+            return Result.failure(RoleError.CONTAIN_DOTS);
         }
         if (value.length() > 20) {
-            return Result.failure(RoleError.TOOLONG);
+            return Result.failure(RoleError.TOO_LONG);
         }
         if (value.length() < 3) {
             return Result.failure(RoleError.TOOSHORT);

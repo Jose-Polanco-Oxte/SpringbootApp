@@ -3,6 +3,7 @@ package jpolanco.springbootapp.user.infrastructure.services;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jpolanco.springbootapp.user.application.ports.input.JwtProvider;
 import jpolanco.springbootapp.user.domain.model.User;
 import jpolanco.springbootapp.user.domain.model.valueobjects.Role;
 import lombok.RequiredArgsConstructor;
@@ -10,13 +11,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
+
 @RequiredArgsConstructor
 @Service
-public class JwtService {
+public class JwtService implements JwtProvider {
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -27,10 +28,13 @@ public class JwtService {
     @Value("${jwt.expiration.refresh}")
     private long refreshExpirationTime;
 
-    public String generateToken(final User user) {
+
+    @Override
+    public String generateAccessToken(final User user) {
         return buildToken(user, expirationTime);
     }
 
+    @Override
     public String generateRefreshToken(final User user) {
         return buildToken(user, refreshExpirationTime);
     }
@@ -51,13 +55,11 @@ public class JwtService {
     }
 
     private SecretKey getSignInKey() {
-        System.out.println("Secret Key: " + secretKey);
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        System.out.println("Key Bytes Length: " + keyBytes.length);
-        System.out.println("Key Bytes: " + Arrays.toString(keyBytes));
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    @Override
     public String extractUsername(String token) {
         return Jwts.parser()
                 .verifyWith(getSignInKey())
@@ -67,6 +69,7 @@ public class JwtService {
                 .getSubject();
     }
 
+    @Override
     public boolean isTokenValid(String token, String email) {
         final var username = extractUsername(token);
         return (username.equals(email) && !isTokenExpired(token));

@@ -1,6 +1,6 @@
 package jpolanco.springbootapp.user.application.errors;
 
-import jpolanco.springbootapp.shared.application.Error;
+import jpolanco.springbootapp.shared.domain.Error;
 
 public class UserAppError extends Error {
 
@@ -16,4 +16,10 @@ public class UserAppError extends Error {
     public final static UserAppError QR_CODE_EXISTS = new UserAppError("QR_CODE_EXISTS", "QR code already exists");
     public final static UserAppError QR_CODE_NOT_DELETED = new UserAppError("QR_CODE_NOT_DELETED", "QR code not deleted");
     public final static UserAppError EMPTY_LIST = new UserAppError("EMPTY_LIST", "The user list is empty");
+    public final static UserAppError INVALID_TOKEN = new UserAppError("INVALID_TOKEN", "Token is invalid");
+    public final static UserAppError INVALID_HEADER = new UserAppError("INVALID_HEADER", "Format of authorization header is invalid");
+    public final static UserAppError INVALID_ID_FORMAT = new UserAppError("INVALID_ID_FORMAT", "Format of UUID is invalid");
+    public final static UserAppError EMAILS_DO_NOT_MATCH = new UserAppError("EMAILS_DO_NOT_MATCH", "On change email is not the same as confirm email");
+    public final static UserAppError PASSWORDS_ARE_SAME = new UserAppError("PASSWORDS_ARE_SAME", "On change password is the same as old password");
+    public final static UserAppError OLD_PASSWORD_IS_INCORRECT = new UserAppError("OLD_PASSWORD_IS_INCORRECT", "Old password is incorrect");
 }

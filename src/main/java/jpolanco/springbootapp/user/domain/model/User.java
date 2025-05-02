@@ -1,12 +1,14 @@
 package jpolanco.springbootapp.user.domain.model;
 
 
-import jpolanco.springbootapp.shared.application.Result;
+import jpolanco.springbootapp.shared.domain.Result;
 import jpolanco.springbootapp.user.domain.model.valueobjects.*;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 public class User {
@@ -51,6 +53,42 @@ public class User {
                 .email(email)
                 .encodedPassword(encodedPassword)
                 .roles(Set.of(Role.create("USER").getValue()))
+                .status("ACTIVE")
+                .qrFileName(UUID.randomUUID().toString())
+                .createdAt(Instant.now())
+                .build();
+    }
+
+    public static Result<User> createAdmin(
+            String firstName,
+            String lastName,
+            String email,
+            String encodedPassword
+    ) {
+        return builder()
+                .userId(UUID.randomUUID().toString())
+                .fullName(firstName, lastName)
+                .email(email)
+                .encodedPassword(encodedPassword)
+                .roles(Set.of(Role.create("ADMIN").getValue()))
+                .status("ACTIVE")
+                .qrFileName(UUID.randomUUID().toString())
+                .createdAt(Instant.now())
+                .build();
+    }
+
+    public static Result<User> createOrganizer(
+            String firstName,
+            String lastName,
+            String email,
+            String encodedPassword
+    ) {
+        return builder()
+                .userId(UUID.randomUUID().toString())
+                .fullName(firstName, lastName)
+                .email(email)
+                .encodedPassword(encodedPassword)
+                .roles(Set.of(Role.create("ORGANIZER").getValue()))
                 .status("ACTIVE")
                 .qrFileName(UUID.randomUUID().toString())
                 .createdAt(Instant.now())
@@ -207,6 +245,24 @@ public class User {
         return result;
     }
 
+    public Result<FullName> changeFirstName(String newFirstName) {
+        var result = FullName.create(newFirstName, this.name.getLastName());
+        if (result.isFailure()) {
+            return Result.failure(result.getError());
+        }
+        this.name = result.getValue();
+        return result;
+    }
+
+    public Result<FullName> changeLastName(String newLastName) {
+        var result = FullName.create(this.name.getFirstName(), newLastName);
+        if (result.isFailure()) {
+            return Result.failure(result.getError());
+        }
+        this.name = result.getValue();
+        return result;
+    }
+
     // Email domain
     public String getEmail() {
         return email.getValue();
@@ -240,8 +296,12 @@ public class User {
         return roles.getValues();
     }
 
-    public Result<Roles> changeAllRoles(Set<Role> newRoles) {
-        var result = Roles.create(newRoles);
+    public Result<Roles> changeAllRoles(List<String> newRoles) {
+        Result<Roles> result = Roles.create(newRoles.stream()
+                .map(Role::create)
+                .map(Result::getValue)
+                .collect(Collectors.toSet()));
+
         if (result.isFailure()) {
             return Result.failure(result.getError());
         }

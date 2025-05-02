@@ -1,10 +1,10 @@
 package jpolanco.springbootapp.user.domain.model.valueobjects;
 
-import jpolanco.springbootapp.shared.application.Error;
-import jpolanco.springbootapp.shared.application.Result;
+import jpolanco.springbootapp.shared.domain.Error;
+import jpolanco.springbootapp.shared.domain.Result;
 
 public class QRFileName {
-    private String fileName;
+    private final String fileName;
 
     private QRFileName(String value) {
         this.fileName = value;
@@ -12,7 +12,7 @@ public class QRFileName {
 
     public static Result<QRFileName> create(String value) {
         if (value == null || value.isEmpty()) {
-            return Result.failure(Error.NULLVALUE);
+            return Result.failure(Error.NULL_VALUE);
         }
         return Result.success(new QRFileName(value));
     }

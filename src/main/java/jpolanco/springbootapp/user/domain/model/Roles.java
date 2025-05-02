@@ -1,14 +1,14 @@
 package jpolanco.springbootapp.user.domain.model;
 
-import jpolanco.springbootapp.shared.application.Error;
-import jpolanco.springbootapp.shared.application.Result;
+import jpolanco.springbootapp.shared.domain.Error;
+import jpolanco.springbootapp.shared.domain.Result;
 import jpolanco.springbootapp.user.domain.model.valueobjects.Role;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class Roles {
-    private Set<Role> values;
+    private final Set<Role> values;
     private final static Set<String> validRoles = Set.of(
             "USER",
             "ADMIN",
@@ -21,7 +21,7 @@ public class Roles {
 
     public static Result<Roles> create(Set<Role> values) {
         if (values == null || values.isEmpty()) {
-            return Result.failure(Error.NULLVALUE);
+            return Result.failure(Error.NULL_VALUE);
         }
         for (Role role : values) {
             Result<Role> result = isValidRole(role);
@@ -34,7 +34,7 @@ public class Roles {
 
     private static Result<Role> isValidRole(Role role) {
         if (role == null || role.getValue().isBlank()) {
-            return Result.failure(Error.NULLVALUE);
+            return Result.failure(Error.NULL_VALUE);
         }
         if (!validRoles.contains(role.getValue())) {
             return Result.failure(new Error("InvalidRole", "Role is not valid"));

@@ -1,9 +1,8 @@
 package jpolanco.springbootapp.user.infrastructure.adapters.input.controllers;
 
-import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
-import jpolanco.springbootapp.user.infrastructure.adapters.input.dto.UserUpdateDto;
-import jpolanco.springbootapp.user.infrastructure.services.UserServices;
+import jpolanco.springbootapp.user.infrastructure.adapters.input.dto.request.AllUserUpdateRequest;
+import jpolanco.springbootapp.user.infrastructure.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,52 +13,51 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserServices userServices;
+    private final UserService service;
 
     @PostMapping("/update/{userId}")
-    public ResponseEntity<Object> updateUser(@Valid @RequestBody UserUpdateDto userCreationDto,
-                                                  @PathVariable String userId) {
-        var command = userServices.updateUser(userCreationDto, userId);
-        if (!command.isOk()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(command.toResponse());
+    public ResponseEntity<Object> updateUser(@Valid @RequestBody AllUserUpdateRequest request,
+                                          @PathVariable String userId) {
+        var response = service.updateUser(request, userId);
+        if (response.isFailure()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.getMessage());
         }
-        return ResponseEntity.ok(command.toResponse());
+        return ResponseEntity.ok(response.getValue());
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<Object> getUser(@PathVariable String userId) {
-        var command = userServices.getUser(userId);
-        if (!command.isOk()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(command.toResponse());
+        var response = service.getUserById(userId);
+        if (response.isFailure()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.getMessage());
         }
-        return ResponseEntity.ok(command.toResponse());
+        return ResponseEntity.ok(response.getValue());
     }
 
     @GetMapping("/by-email/{email}")
     public ResponseEntity<Object> getUserByEmail(@PathVariable String email) {
-        var command = userServices.getUserByEmail(email);
-        if (!command.isOk()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(command.toResponse());
+        var response = service.getUserByEmail(email);
+        if (response.isFailure()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.getMessage());
         }
-        return ResponseEntity.ok(command.toResponse());
+        return ResponseEntity.ok(response.getValue());
     }
 
     @DeleteMapping("delete/{userId}")
     public ResponseEntity<Object> deleteUser(@PathVariable String userId) {
-        var command = userServices.deleteUser(userId);
-        if (!command.isOk()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(command.toResponse());
+        var response = service.deleteUser(userId);
+        if (response.isFailure()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.getMessage());
         }
-        return ResponseEntity.ok(command.toResponse());
+        return ResponseEntity.ok(response.getValue());
     }
 
     @GetMapping("/all")
     public ResponseEntity<Object> getAllUsers() {
-        System.out.println("getAllUsers");
-        var command = userServices.getAllUsers();
-        if (!command.isOk()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(command.toResponse());
+        var response = service.getAll();
+        if (response.isFailure()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.getMessage());
         }
-        return ResponseEntity.ok(command.toResponse());
+        return ResponseEntity.ok(response.getValue());
     }
 }

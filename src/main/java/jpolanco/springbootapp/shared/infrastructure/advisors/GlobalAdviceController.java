@@ -1,16 +1,21 @@
 package jpolanco.springbootapp.shared.infrastructure.advisors;
 
-import jpolanco.springbootapp.user.infrastructure.adapters.input.dto.ResponseDto;
+import jpolanco.springbootapp.user.application.errors.IllegalUserOperation;
+import jpolanco.springbootapp.user.application.errors.UserDataNotFound;
+import jpolanco.springbootapp.user.infrastructure.errors.DataFailure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+
+import java.util.Objects;
 
 @ControllerAdvice
 public class GlobalAdviceController {
@@ -19,6 +24,41 @@ public class GlobalAdviceController {
     // handling methods as needed.
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalAdviceController.class);
+
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
+        logger.error(e.getMessage(), e);
+        String response = "Invalid request body: " + Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage();
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<String> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException e) {
+        logger.error(e.getMessage(), e);
+        String response = e.getMessage();
+        return ResponseEntity.badRequest().body(response);
+    }
+    @ExceptionHandler(UserDataNotFound.class)
+    public ResponseEntity<String> handleUserDataNotFound(UserDataNotFound e) {
+        logger.error(e.getMessage(), e);
+        String response = e.getMessage();
+        return ResponseEntity.status(404).body(response);
+    }
+
+    @ExceptionHandler(IllegalUserOperation.class)
+    public ResponseEntity<String> handleIllegalUserOperation(IllegalUserOperation e) {
+        logger.error("Illegal user operation: {}", e.getMessage(), e);
+        String response = "Illegal user operation: " + e.getMessage();
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(DataFailure.class)
+    public ResponseEntity<String> handleDataFailure(DataFailure e) {
+        logger.error("Data failure occurred: {}", e.getMessage(), e);
+        String response = "Data failure occurred: " + e.getMessage();
+        return ResponseEntity.badRequest().body(response);
+    }
 
     @ExceptionHandler(AuthenticationServiceException.class)
     public ResponseEntity<String> handleAuthenticationServiceException(AuthenticationServiceException e) {
@@ -45,13 +85,6 @@ public class GlobalAdviceController {
     public ResponseEntity<String> handleNullPointerException(NullPointerException e) {
         logger.error("Null pointer exception occurred: {}", e.getMessage(), e);
         String response = "Null pointer exception occurred";
-        return ResponseEntity.badRequest().body(response);
-    }
-
-    @ExceptionHandler(InvalidDataAccessApiUsageException.class)
-    public ResponseEntity<String> handleInvalidDataAccessApiUsageException(InvalidDataAccessApiUsageException e) {
-        logger.error("Invalid data access API usage: {}", e.getMessage(), e);
-        String response = e.getMessage();
         return ResponseEntity.badRequest().body(response);
     }
 

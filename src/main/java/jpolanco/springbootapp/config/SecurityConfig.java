@@ -1,6 +1,8 @@
 package jpolanco.springbootapp.config;
 
-import jpolanco.springbootapp.user.infrastructure.adapters.output.persistence.Token;
+import jpolanco.springbootapp.config.auth.JwtAuthFilter;
+import jpolanco.springbootapp.user.domain.model.TokenStatus;
+import jpolanco.springbootapp.user.infrastructure.adapters.output.persistence.TokenEntity;
 import jpolanco.springbootapp.user.infrastructure.adapters.output.repository.JpaTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,10 +23,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
-@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
@@ -75,10 +77,9 @@ public class SecurityConfig {
         }
 
         final String jwtToken = token.substring(7);
-        final Token foundToken = jpaTokenRepository.findByToken(jwtToken)
+        final TokenEntity foundTokenEntity = jpaTokenRepository.findByToken(jwtToken)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid accessToken"));
-        foundToken.setExpired(true);
-        foundToken.setRevoked(true);
-        jpaTokenRepository.save(foundToken);
+        foundTokenEntity.setStatus(TokenStatus.REVOKED);
+        jpaTokenRepository.save(foundTokenEntity);
     }
 }
