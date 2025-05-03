@@ -10,7 +10,7 @@ import jpolanco.springbootapp.user.infrastructure.adapters.Mappers.dto.UserDtoCr
 import jpolanco.springbootapp.user.infrastructure.adapters.input.dto.request.UpdateEmailRequest;
 import jpolanco.springbootapp.user.infrastructure.adapters.input.dto.request.UpdateNameRequest;
 import jpolanco.springbootapp.user.infrastructure.adapters.input.dto.request.UpdatePasswordRequest;
-import jpolanco.springbootapp.user.infrastructure.components.AuxTokenManager;
+import jpolanco.springbootapp.user.infrastructure.components.AuxTokenManagerImpl;
 import jpolanco.springbootapp.user.infrastructure.services.interfaces.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final DeleteUserByIdUC deleteUserByIdUC;
     private final UpdateUserUC updateUserUC;
     private final UserValidation userValidation;
-    private final AuxTokenManager auxTokenManager;
+    private final AuxTokenManagerImpl auxTokenManagerImpl;
 
     @Override
     public Result<Dto> get(String userId) {
@@ -69,7 +69,7 @@ public class ProfileServiceImpl implements ProfileService {
             return Result.failure(result.getError());
         }
         var updatedUser = result.getValue();
-        auxTokenManager.revokeAllUserTokens(updatedUser.getId());
+        auxTokenManagerImpl.revokeAllUserTokens(updatedUser.getId());
         return Result.success(simpleResponseCreator.create("Email updated successfully"));
     }
 
@@ -95,7 +95,7 @@ public class ProfileServiceImpl implements ProfileService {
         if (result.isFailure()) {
             return Result.failure(result.getError());
         }
-        auxTokenManager.revokeAllUserTokens(validUser.getId());
+        auxTokenManagerImpl.revokeAllUserTokens(validUser.getId());
         return Result.success(simpleResponseCreator.create("Password updated successfully"));
     }
 }

@@ -2,9 +2,11 @@ package jpolanco.springbootapp.user.domain.model;
 
 
 import jpolanco.springbootapp.shared.domain.Result;
+import jpolanco.springbootapp.user.application.events.UserRegistered;
 import jpolanco.springbootapp.user.domain.model.valueobjects.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -20,6 +22,7 @@ public class User {
     private Status status;
     private QRFileName qrFileName;
     private final Instant createdAt;
+    private List<DomainEvent> events = new ArrayList<>();
 
     private User(
             UserId userId,
@@ -47,8 +50,9 @@ public class User {
             String email,
             String encodedPassword
     ) {
+        var userId = UUID.randomUUID().toString();
         return builder()
-                .userId(UUID.randomUUID().toString())
+                .userId(userId)
                 .fullName(firstName, lastName)
                 .email(email)
                 .encodedPassword(encodedPassword)
@@ -56,6 +60,7 @@ public class User {
                 .status("ACTIVE")
                 .qrFileName(UUID.randomUUID().toString())
                 .createdAt(Instant.now())
+                .addEvent(new UserRegistered(userId, email))
                 .build();
     }
 
@@ -133,6 +138,7 @@ public class User {
         private Result<QRFileName> qrFileName;
         private Instant createdAt;
         private Result<Void> isValid = Result.success(null);
+        private DomainEvent domainEvent;
 
         private void checker(Result<?> result) {
             if (result.isFailure() && !isValid.isFailure()) {
@@ -193,14 +199,18 @@ public class User {
             return this;
         }
 
+        public Builder addEvent(DomainEvent event) {
+            this.domainEvent = event;
+            return this;
+        }
+
         private Result<User> build() {
             // Comprobamos el estado del result es valido
             if (isValid.isFailure()) {
                 return Result.failure(isValid.getError());
             }
 
-            // Ahora creamos el user
-            return Result.success(new User(
+            var user = new User(
                     userId.getValue(),
                     fullName.getValue(),
                     email.getValue(),
@@ -209,7 +219,9 @@ public class User {
                     status.getValue(),
                     qrFileName.getValue(),
                     createdAt
-            ));
+            );
+            user.recordEvent(domainEvent);
+            return Result.success(user);
         }
     }
 
@@ -367,5 +379,19 @@ public class User {
         }
         this.qrFileName = result.getValue();
         return result;
+    }
+
+    public List<DomainEvent> pullEvents() {
+        return this.events;
+    }
+
+    private void recordEvent(DomainEvent event) {
+        if (event != null) {
+            this.events.add(event);
+        }
+    }
+
+    public void clearEvents() {
+        this.events.clear();
     }
 }

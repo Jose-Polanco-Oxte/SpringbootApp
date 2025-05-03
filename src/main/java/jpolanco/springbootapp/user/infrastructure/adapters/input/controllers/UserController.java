@@ -16,7 +16,7 @@ public class UserController {
     private final UserService service;
 
     @PostMapping("/update/{userId}")
-    public ResponseEntity<Object> updateUser(@Valid @RequestBody AllUserUpdateRequest request,
+    public ResponseEntity<Object> update(@Valid @RequestBody AllUserUpdateRequest request,
                                           @PathVariable String userId) {
         var response = service.updateUser(request, userId);
         if (response.isFailure()) {
@@ -44,7 +44,7 @@ public class UserController {
     }
 
     @DeleteMapping("delete/{userId}")
-    public ResponseEntity<Object> deleteUser(@PathVariable String userId) {
+    public ResponseEntity<Object> delete(@PathVariable String userId) {
         var response = service.deleteUser(userId);
         if (response.isFailure()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.getMessage());

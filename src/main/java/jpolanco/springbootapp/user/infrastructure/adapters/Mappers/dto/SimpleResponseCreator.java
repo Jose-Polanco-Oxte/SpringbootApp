@@ -6,8 +6,7 @@ import jpolanco.springbootapp.shared.infrastructure.SimpleResponseDto;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SimpleResponseCreator implements DtoCreator<String> {
-    @Override
+public class SimpleResponseCreator {
     public Dto create(String message) {
         return new SimpleResponseDto(message);
     }

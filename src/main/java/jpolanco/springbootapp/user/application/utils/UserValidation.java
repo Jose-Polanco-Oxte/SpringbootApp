@@ -25,9 +25,6 @@ public class UserValidation {
             return true;
         }
     }
-    public boolean isUserExists(String userId) {
-        return userRepository.findById(userId).isPresent();
-    }
     public boolean isEmailExists(String email) {
         return userRepository.findByEmail(email).isPresent();
     }

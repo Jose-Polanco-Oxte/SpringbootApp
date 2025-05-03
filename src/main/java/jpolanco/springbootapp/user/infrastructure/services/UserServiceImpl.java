@@ -1,13 +1,13 @@
 package jpolanco.springbootapp.user.infrastructure.services;
 
 import jpolanco.springbootapp.shared.application.Dto;
+import jpolanco.springbootapp.user.application.ports.input.AuxTokenManager;
 import jpolanco.springbootapp.user.application.uc.*;
 import jpolanco.springbootapp.user.application.utils.UserValidation;
 import jpolanco.springbootapp.user.infrastructure.adapters.Mappers.dto.SimpleResponseCreator;
-import jpolanco.springbootapp.user.infrastructure.adapters.Mappers.dto.UserDtoCreator;
 import jpolanco.springbootapp.shared.domain.Result;
+import jpolanco.springbootapp.user.infrastructure.adapters.Mappers.dto.UserDtoCreator;
 import jpolanco.springbootapp.user.infrastructure.adapters.input.dto.request.AllUserUpdateRequest;
-import jpolanco.springbootapp.user.infrastructure.components.AuxTokenManager;
 import jpolanco.springbootapp.user.infrastructure.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,15 +18,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
-
-    private final UserDtoCreator dtoCreator;
     private final SimpleResponseCreator simpleResponseDto;
+    private final UserDtoCreator dtoCreator;
     private final GetUserByIdUC getUserByIdUC;
     private final GetUserByEmailUC getUserByEmailUC;
     private final GetAllUsersUC getAllUsersUC;
     private final UpdateUserUC updateUser;
     private final DeleteUserByIdUC deleteUserByIdUC;
-    private final AuxTokenManager auxTokenManager;
+    private final AuxTokenManager auxTokenManagerImpl;
     private final UserValidation userValidation;
 
     @Override
@@ -84,7 +83,7 @@ public class UserServiceImpl implements UserService {
             return Result.failure(updatedUser.getError());
         }
         var user = updatedUser.getValue();
-        auxTokenManager.revokeAllUserTokens(user.getId());
+        auxTokenManagerImpl.revokeAllUserTokens(user.getId());
         return Result.success(simpleResponseDto.create("User updated successfully"));
     }
 

@@ -1,6 +1,7 @@
 package jpolanco.springbootapp.user.infrastructure.components;
 
 import jpolanco.springbootapp.user.application.errors.IllegalUserOperation;
+import jpolanco.springbootapp.user.application.ports.input.AuxTokenManager;
 import jpolanco.springbootapp.user.application.ports.output.JwtRepository;
 import jpolanco.springbootapp.user.domain.model.Token;
 import jpolanco.springbootapp.user.domain.model.TokenStatus;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class AuxTokenManager {
+public class AuxTokenManagerImpl implements AuxTokenManager {
 
     private final JwtRepository jwtRepository;
 

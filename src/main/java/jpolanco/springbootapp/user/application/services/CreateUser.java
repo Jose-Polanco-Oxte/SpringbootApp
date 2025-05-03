@@ -31,7 +31,7 @@ public class CreateUser implements CreateUserUc {
         }
         var newUser = maybeNewUser.getValue();
         qrProvider.generate(newUser.getQRFileName(), newUser.getEmail());
-        var savedUser = userRepository.save(newUser);
-        return Result.success(savedUser);
+        userRepository.save(newUser);
+        return Result.success(newUser);
     }
 }

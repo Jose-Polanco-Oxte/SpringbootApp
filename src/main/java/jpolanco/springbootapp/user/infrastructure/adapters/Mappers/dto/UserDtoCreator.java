@@ -7,7 +7,7 @@ import jpolanco.springbootapp.user.domain.model.User;
 import jpolanco.springbootapp.user.domain.model.valueobjects.Role;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("UserDto")
 public class UserDtoCreator implements DtoCreator<User> {
     @Override
     public Dto create(User user) {
